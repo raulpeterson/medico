@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Atestado Médico de Comparecimento - Duas Vias</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', serif;
+    }
+
+    .pagina {
+      width: 297mm;
+      height: 210mm;
+      display: flex;
+      background: white;
+      margin: 0 auto;
+    }
+
+    .via {
+      width: 50%;
+      padding: 10mm 15mm;
+      box-sizing: border-box;
+      position: relative;
+      border-right: 1px dashed gray;
+    }
+
+    .via:last-child {
+      border-right: none;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 14pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+
+    .header {
+      font-size: 11pt;
+      text-align: center;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 11pt;
+      text-align: justify;
+      margin-bottom: 10px;
+    }
+
+    .linha-editavel {
+      display: inline-block;
+      min-width: 60px;
+      border-bottom: 1px dotted #000;
+      padding: 0 5px;
+      outline: none;
+    }
+
+    .assinatura-line {
+      margin-top: 15px;
+      border-bottom: 1px solid black;
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .assinatura {
+      text-align: center;
+      position: absolute;
+      bottom: 20mm;
+      left: 0;
+      width: 100%;
+      font-size: 9pt;
+    }
+
+    .data-rodape {
+      position: absolute;
+      bottom: 38mm;
+      left: 15mm;
+      font-size: 11pt;
+      font-weight: bold;
+    }
+
+    #btnExportar {
+      display: block;
+      margin: 15px auto;
+    }
+
+    @media print {
+      #btnExportar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<button id="btnExportar" onclick="exportarPDF()">Exportar para PDF</button>
+<a href="index.html" style="position: absolute; top: 10px; left: 10px; font-size: 10pt; text-decoration: none; border: 1px solid #000; padding: 5px 10px; background-color: #f8f8f8; color: #000; border-radius: 4px;">← Voltar</a>
+
+<div class="pagina" id="conteudoPDF">
+  <!-- Primeira via -->
+  <div class="via">
+    <h2>ATESTADO MÉDICO DE COMPARECIMENTO</h2>
+    <div class="header">
+      DRA. STHÉFANIE HORN SCHWARZ<br>
+      CRM-PR 60.163
+    </div>
+
+    <p>Eu, Dra. Sthéfanie Horn Schwarz, CRM-PR 60.163, atesto para os devidos fins que o(a) paciente 
+      <span contenteditable="true" class="linha-editavel"></span>, 
+      portador(a) do documento de identidade nº 
+      <span contenteditable="true" class="linha-editavel"></span>, 
+      compareceu à consulta médica nesta data.
+    </p>
+
+    <p>Diagnóstico (CID): <span contenteditable="true" class="linha-editavel" style="min-width: 180px;"></span></p>
+    <p>Observações: <span contenteditable="true" class="linha-editavel" style="min-width: 180px;"></span></p>
+
+    <div class="data-rodape">
+      Data: <span contenteditable="true" class="linha-editavel" id="data1" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
+    </div>
+
+    <div class="assinatura">
+      <div class="assinatura-line"></div>
+      <div>STHÉFANIE HORN SCHWARZ</div>
+      <div>Médica</div>
+      <div>CRM-PR 60.163</div>
+    </div>
+  </div>
+
+ 
+
+<script>
+  function formatarData(campo) {
+    let valor = campo.textContent.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.slice(0, 8);
+    if (valor.length === 8) {
+      const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
+      campo.textContent = formatado;
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(campo);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+
+  function exportarPDF() {
+    const opt = {
+      margin: 0,
+      filename: 'atestado_comparecimento_duas_vias.pdf',
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    document.getElementById("btnExportar").style.display = "none";
+
+    setTimeout(() => {
+      html2pdf().set(opt).from(document.getElementById("conteudoPDF")).save().then(() => {
+        document.getElementById("btnExportar").style.display = "block";
+      });
+    }, 300);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Escolha o Tipo de Documento</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f2f5;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 22px;
+      color: #333;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Escolha o Tipo de Documento</h1>
+  <button onclick="window.location.href='receituario.html'">Receituário Médico</button>
+  <button onclick="window.location.href='atestado_comparecimento.html'">Atestado Médico de Comparecimento</button>
+  <button onclick="window.location.href='atestado_medico.html'">Atestado Médico</button>
+  <button onclick="window.location.href='encaminhamento.html'">Encaminhamento</button> <!-- NOVO BOTÃO -->
+</div>
+</body>
+</html>
