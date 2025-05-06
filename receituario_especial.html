@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Receituário Médico Especial - Duas Vias</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', serif;
+    }
+
+    .pagina {
+      width: 297mm;
+      height: 210mm;
+      display: flex;
+      background: white;
+      margin: 0 auto;
+    }
+
+    .via {
+      width: 50%;
+      padding: 10mm 15mm;
+      box-sizing: border-box;
+      position: relative;
+      border-right: 1px dashed gray;
+    }
+
+    .via:last-child {
+      border-right: none;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 14pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+
+    .header {
+      font-size: 11pt;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .campo {
+      margin-bottom: 6px;
+    }
+
+    label {
+      font-size: 10pt;
+      font-weight: bold;
+      display: block;
+    }
+
+    .linha-editavel {
+      display: inline-block;
+      min-width: 10px;
+      padding: 2px 4px;
+      font-family: 'Times New Roman', serif;
+      font-size: 10pt;
+      outline: none;
+      border: 1px dashed #aaa;
+      border-radius: 2px;
+    }
+
+    body.exportando .linha-editavel {
+      border: none;
+    }
+
+    .medicamento {
+      margin-top: 3px;
+    }
+
+    .assinatura {
+      text-align: center;
+      position: absolute;
+      bottom: 20mm;
+      left: 0;
+      width: 100%;
+      font-size: 9pt;
+      visibility: hidden;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .data-fixa {
+  position: absolute;
+  bottom: 35mm;
+  left: 0;
+  width: 100%;
+  text-align: left;
+  font-size: 10pt;
+  font-weight: bold;
+  padding-left: 5mm; /* opcional: distância da borda */
+}
+
+    .assinatura-line {
+      margin-top: 10px;
+      border-bottom: 1px solid black;
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    body.exportando .assinatura {
+      visibility: visible;
+      height: auto;
+    }
+
+    #btnExportar, #controleQuantidade {
+      display: block;
+      margin: 15px auto;
+    }
+
+    @media print {
+      #btnExportar, #controleQuantidade {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<button id="btnExportar" onclick="exportarPDF()">Exportar para PDF</button>
+<a href="index.html" style="position: absolute; top: 10px; left: 10px; font-size: 10pt; text-decoration: none; border: 1px solid #000; padding: 5px 10px; background-color: #f8f8f8; color: #000; border-radius: 4px;">← Voltar</a>
+
+<div class="pagina" id="conteudoPDF">
+  <!-- Primeira via -->
+  <div class="via">
+    <h2>RECEITUÁRIO MÉDICO (1ª VIA – FARMÁCIA)</h2>
+    <div class="header">
+      DRA. STHÉFANIE HORN SCHWARZ<br>
+      CRM-PR 60.163
+    </div>
+
+    <div class="campo">
+      <label>Paciente:</label>
+      <span contenteditable="true" class="linha-editavel" id="paciente" oninput="sincronizarCampo(this)"></span>
+    </div>
+
+    <div class="campo">
+      <label>Data de nascimento:</label>
+      <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarData(this); sincronizarCampo(this)" onkeyup="formatarData(this)"></span>
+    </div>
+
+    <div class="campo">
+      <label>Endereço:</label>
+      <span contenteditable="true" class="linha-editavel" id="endereco" oninput="sincronizarCampo(this)"></span>
+    </div>
+
+    <div id="controleQuantidade" class="campo">
+      <label>Quantidade de Medicamentos:</label>
+      <select id="qtdMedicamentos" onchange="gerarMedicamentos()">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
+    </div>
+
+    <div id="medicamentos1"></div>
+
+    <!-- Data fixa acima da assinatura -->
+    <div class="data-fixa">
+      <label>Data:</label>
+      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this); sincronizarCampo(this)" onkeyup="formatarData(this)"></span>
+    </div>
+
+    <div class="assinatura">
+      <div class="assinatura-line"></div>
+      <div>STHÉFANIE HORN SCHWARZ</div>
+      <div>Médica</div>
+      <div>CRM-PR 60.163</div>
+    </div>
+  </div>
+
+  <!-- Segunda via -->
+  <div class="via exportando">
+    <h2>RECEITUÁRIO MÉDICO (2ª VIA – CONTROLE MÉDICO)</h2>
+    <div class="header">
+      DRA. STHÉFANIE HORN SCHWARZ<br>
+      CRM-PR 60.163
+    </div>
+
+    <div class="campo">
+      <label>Paciente:</label>
+      <span contenteditable="true" class="linha-editavel" id="copia_paciente"></span>
+    </div>
+
+    <div class="campo">
+      <label>Data de nascimento:</label>
+      <span contenteditable="true" class="linha-editavel" id="copia_nascimento"></span>
+    </div>
+
+    <div class="campo">
+      <label>Endereço:</label>
+      <span contenteditable="true" class="linha-editavel" id="copia_endereco"></span>
+    </div>
+
+    <div id="medicamentos2"></div>
+
+    <div class="data-fixa">
+      <label>Data:</label>
+      <span contenteditable="true" class="linha-editavel" id="copia_data"></span>
+    </div>
+
+    <div class="assinatura">
+      <div class="assinatura-line"></div>
+      <div>STHÉFANIE HORN SCHWARZ</div>
+      <div>Médica</div>
+      <div>CRM-PR 60.163</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function gerarMedicamentos() {
+    const qtd = parseInt(document.getElementById("qtdMedicamentos").value);
+    const med1 = document.getElementById("medicamentos1");
+    const med2 = document.getElementById("medicamentos2");
+
+    med1.innerHTML = '';
+    med2.innerHTML = '';
+
+    for (let i = 1; i <= qtd; i++) {
+      const idMedicamento = `medicamento${i}`;
+      const idModoUso = `modouso${i}`;
+
+      med1.innerHTML += `
+        <div class="medicamento">
+          <label>${i}. <span contenteditable="true" class="linha-editavel" id="${idMedicamento}" oninput="sincronizarCampo(this)"></span></label>
+          <label>Modo de usar:</label>
+          <span contenteditable="true" class="linha-editavel" id="${idModoUso}" oninput="sincronizarCampo(this)"></span>
+        </div>`;
+
+      med2.innerHTML += `
+        <div class="medicamento">
+          <label>${i}. <span contenteditable="true" class="linha-editavel" id="copia_${idMedicamento}"></span></label>
+          <label>Modo de usar:</label>
+          <span contenteditable="true" class="linha-editavel" id="copia_${idModoUso}"></span>
+        </div>`;
+    }
+  }
+
+  function sincronizarCampo(campo) {
+    const copia = document.getElementById("copia_" + campo.id);
+    if (copia) {
+      copia.textContent = campo.textContent;
+    }
+  }
+
+  function exportarPDF() {
+    document.body.classList.add("exportando");
+    document.getElementById("btnExportar").style.display = "none";
+    document.getElementById("controleQuantidade").style.display = "none";
+
+    const nome = document.getElementById("paciente").textContent.trim().replace(/\s+/g, "_") || "sem_nome";
+    const nomeArquivo = `receituario_duas_vias - ${nome}.pdf`;
+
+    const opt = {
+      margin: 0,
+      filename: nomeArquivo,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    setTimeout(() => {
+      html2pdf().set(opt).from(document.getElementById("conteudoPDF")).save().then(() => {
+        document.body.classList.remove("exportando");
+        document.getElementById("btnExportar").style.display = "block";
+        document.getElementById("controleQuantidade").style.display = "block";
+      });
+    }, 300);
+  }
+
+  function formatarData(campo) {
+    let valor = campo.textContent.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.slice(0, 8);
+    if (valor.length === 8) {
+      const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
+      campo.textContent = formatado;
+      sincronizarCampo(campo);
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(campo);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+
+  window.onload = gerarMedicamentos;
+</script>
+
+</body>
+</html>
