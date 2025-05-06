@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Receituário Médico Especial - Duas Vias</title>
+  <title>Receituário Médico</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     html, body {
@@ -25,10 +25,6 @@
       box-sizing: border-box;
       position: relative;
       border-right: 1px dashed gray;
-    }
-
-    .via:last-child {
-      border-right: none;
     }
 
     h2 {
@@ -87,15 +83,15 @@
     }
 
     .data-fixa {
-  position: absolute;
-  bottom: 35mm;
-  left: 0;
-  width: 100%;
-  text-align: left;
-  font-size: 10pt;
-  font-weight: bold;
-  padding-left: 5mm; /* opcional: distância da borda */
-}
+      position: absolute;
+      bottom: 35mm;
+      left: 0;
+      width: 100%;
+      text-align: left;
+      font-size: 10pt;
+      font-weight: bold;
+      padding-left: 5mm;
+    }
 
     .assinatura-line {
       margin-top: 10px;
@@ -138,17 +134,17 @@
 
     <div class="campo">
       <label>Paciente:</label>
-      <span contenteditable="true" class="linha-editavel" id="paciente" oninput="sincronizarCampo(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="paciente"></span>
     </div>
 
     <div class="campo">
       <label>Data de nascimento:</label>
-      <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarData(this); sincronizarCampo(this)" onkeyup="formatarData(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="campo">
       <label>Endereço:</label>
-      <span contenteditable="true" class="linha-editavel" id="endereco" oninput="sincronizarCampo(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="endereco"></span>
     </div>
 
     <div id="controleQuantidade" class="campo">
@@ -167,10 +163,9 @@
 
     <div id="medicamentos1"></div>
 
-    <!-- Data fixa acima da assinatura -->
     <div class="data-fixa">
       <label>Data:</label>
-      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this); sincronizarCampo(this)" onkeyup="formatarData(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="assinatura">
@@ -180,16 +175,13 @@
       <div>CRM-PR 60.163</div>
     </div>
   </div>
+</div>
 
-  
 <script>
   function gerarMedicamentos() {
     const qtd = parseInt(document.getElementById("qtdMedicamentos").value);
     const med1 = document.getElementById("medicamentos1");
-    const med2 = document.getElementById("medicamentos2");
-
     med1.innerHTML = '';
-    med2.innerHTML = '';
 
     for (let i = 1; i <= qtd; i++) {
       const idMedicamento = `medicamento${i}`;
@@ -197,24 +189,10 @@
 
       med1.innerHTML += `
         <div class="medicamento">
-          <label>${i}. <span contenteditable="true" class="linha-editavel" id="${idMedicamento}" oninput="sincronizarCampo(this)"></span></label>
+          <label>${i}. <span contenteditable="true" class="linha-editavel" id="${idMedicamento}"></span></label>
           <label>Modo de usar:</label>
-          <span contenteditable="true" class="linha-editavel" id="${idModoUso}" oninput="sincronizarCampo(this)"></span>
+          <span contenteditable="true" class="linha-editavel" id="${idModoUso}"></span>
         </div>`;
-
-      med2.innerHTML += `
-        <div class="medicamento">
-          <label>${i}. <span contenteditable="true" class="linha-editavel" id="copia_${idMedicamento}"></span></label>
-          <label>Modo de usar:</label>
-          <span contenteditable="true" class="linha-editavel" id="copia_${idModoUso}"></span>
-        </div>`;
-    }
-  }
-
-  function sincronizarCampo(campo) {
-    const copia = document.getElementById("copia_" + campo.id);
-    if (copia) {
-      copia.textContent = campo.textContent;
     }
   }
 
@@ -224,7 +202,7 @@
     document.getElementById("controleQuantidade").style.display = "none";
 
     const nome = document.getElementById("paciente").textContent.trim().replace(/\s+/g, "_") || "sem_nome";
-    const nomeArquivo = `receituario_duas_vias - ${nome}.pdf`;
+    const nomeArquivo = `receituario - ${nome}.pdf`;
 
     const opt = {
       margin: 0,
@@ -249,7 +227,6 @@
     if (valor.length === 8) {
       const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
       campo.textContent = formatado;
-      sincronizarCampo(campo);
       const range = document.createRange();
       const sel = window.getSelection();
       range.selectNodeContents(campo);
@@ -264,4 +241,3 @@
 
 </body>
 </html>
-
