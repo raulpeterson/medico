@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Escolha o Tipo de Documento</title>
   <style>
     body {
@@ -13,18 +14,29 @@
       margin: 0;
       background-color: #f0f2f5;
     }
+
     .container {
       background: white;
       padding: 40px;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
+      max-width: 90%;
+      width: 320px;
     }
+
+    .logo {
+      width: 150px;
+      max-width: 100%;
+      margin-bottom: 20px;
+    }
+
     h1 {
       margin-bottom: 30px;
       font-size: 22px;
       color: #333;
     }
+
     button {
       display: block;
       width: 100%;
@@ -38,21 +50,21 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-<div class="container">
-<img src="logo.jpg" alt="Logo" style="width: 200px; max-width: 100%; margin-bottom: 20px; border-radius: 8px; display: block; margin-left: auto; margin-right: auto;">
-  <h1>Escolha o Tipo de Documento</h1>
-  <button onclick="window.location.href='receituario.html'">Receituário Médico</button>
-  <button onclick="window.location.href='receituario_especial.html'">Receituário Médico Especial</button>
-  <button onclick="window.location.href='atestado_comparecimento.html'">Atestado Médico de Comparecimento</button>
-  <button onclick="window.location.href='atestado_medico.html'">Atestado Médico</button>
-  <button onclick="window.location.href='encaminhamento.html'">Encaminhamento</button>
-</div>
-
+  <div class="container">
+    <img src="logo.jpg" alt="Logo" class="logo">
+    <h1>Escolha o Tipo de Documento</h1>
+    <button onclick="window.location.href='receituario.html'">Receituário Médico</button>
+    <button onclick="window.location.href='receituario_especial.html'">Receituário Médico Especial</button>
+    <button onclick="window.location.href='atestado_comparecimento.html'">Atestado Médico de Comparecimento</button>
+    <button onclick="window.location.href='atestado_medico.html'">Atestado Médico</button>
+    <button onclick="window.location.href='encaminhamento.html'">Encaminhamento</button>
+  </div>
 </body>
 </html>
