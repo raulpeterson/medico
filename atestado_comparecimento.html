@@ -58,6 +58,7 @@
       border-bottom: 1px dotted #000;
       padding: 0 5px;
       outline: none;
+      font-weight: bold;
     }
 
     .assinatura-line {
@@ -103,7 +104,6 @@
 <a href="index.html" style="position: absolute; top: 10px; left: 10px; font-size: 10pt; text-decoration: none; border: 1px solid #000; padding: 5px 10px; background-color: #f8f8f8; color: #000; border-radius: 4px;">← Voltar</a>
 
 <div class="pagina" id="conteudoPDF">
-  <!-- Primeira via -->
   <div class="via">
     <h2>ATESTADO MÉDICO DE COMPARECIMENTO</h2>
     <div class="header">
@@ -112,17 +112,17 @@
     </div>
 
     <p>Eu, Dra. Sthéfanie Horn Schwarz, CRM-PR 60.163, atesto para os devidos fins que o(a) paciente 
-      <span contenteditable="true" class="linha-editavel"></span>, 
+      <span contenteditable="true" class="linha-editavel" id="paciente"></span>, 
       portador(a) do documento de identidade nº 
-      <span contenteditable="true" class="linha-editavel"></span>, 
+      <span contenteditable="true" class="linha-editavel" id="identidade"></span>, 
       compareceu à consulta médica nesta data.
     </p>
 
-    <p>Diagnóstico (CID): <span contenteditable="true" class="linha-editavel" style="min-width: 180px;"></span></p>
-    <p>Observações: <span contenteditable="true" class="linha-editavel" style="min-width: 180px;"></span></p>
+    <p>Diagnóstico (CID): <span contenteditable="true" class="linha-editavel" id="cid"></span></p>
+    <p>Observações: <span contenteditable="true" class="linha-editavel" id="observacoes"></span></p>
 
     <div class="data-rodape">
-      Data: <span contenteditable="true" class="linha-editavel" id="data1" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
+      Data: <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="assinatura">
@@ -132,16 +132,27 @@
       <div>CRM-PR 60.163</div>
     </div>
   </div>
-
- 
+</div>
 
 <script>
+  const campos = document.querySelectorAll('.linha-editavel');
+
+  campos.forEach(el => {
+    const valorSalvo = sessionStorage.getItem(el.id);
+    if (valorSalvo) el.textContent = valorSalvo;
+
+    el.addEventListener('input', () => {
+      sessionStorage.setItem(el.id, el.textContent);
+    });
+  });
+
   function formatarData(campo) {
     let valor = campo.textContent.replace(/\D/g, '');
     if (valor.length > 8) valor = valor.slice(0, 8);
     if (valor.length === 8) {
       const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
       campo.textContent = formatado;
+
       const range = document.createRange();
       const sel = window.getSelection();
       range.selectNodeContents(campo);
@@ -172,4 +183,3 @@
 
 </body>
 </html>
-
