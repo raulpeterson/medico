@@ -51,17 +51,16 @@
     }
 
     .linha-editavel {
-  display: inline-block;
-  min-width: 10px;
-  padding: 2px;
-  font-family: 'Times New Roman', serif;
-  font-size: 10pt;
-  font-weight: bold; /* Adicionado */
-  outline: none;
-  border: 1px dashed #aaa;
-  border-radius: 2px;
-}
-
+      display: inline-block;
+      min-width: 10px;
+      padding: 2px;
+      font-family: 'Times New Roman', serif;
+      font-size: 10pt;
+      font-weight: bold;
+      outline: none;
+      border: 1px dashed #aaa;
+      border-radius: 2px;
+    }
 
     body.exportando .linha-editavel {
       border: none;
@@ -116,30 +115,30 @@
 
     <p>
       Eu, Dra. Sthéfanie Horn Schwarz, CRM-PR 60.163, atesto para os devidos fins que o(a) paciente 
-      <span contenteditable="true" class="linha-editavel" style="min-width: 150px;"></span>, 
+      <span contenteditable="true" class="linha-editavel" id="paciente"></span>, 
       portador(a) do documento de identidade nº 
-      <span contenteditable="true" class="linha-editavel" style="min-width: 100px;"></span>, 
+      <span contenteditable="true" class="linha-editavel" id="identidade"></span>, 
       foi atendido(a) nesta data.
     </p>
 
     <p>
-      Diagnóstico (CID): <span contenteditable="true" class="linha-editavel" style="min-width: 200px;"></span>
+      Diagnóstico (CID): <span contenteditable="true" class="linha-editavel" id="cid"></span>
     </p>
 
     <p>
       Recomendo: afastamento de atividades por 
-      <span contenteditable="true" class="linha-editavel" style="min-width: 40px;"></span> dias, 
+      <span contenteditable="true" class="linha-editavel" id="dias_afastamento"></span> dias, 
       a partir de 
-      <span contenteditable="true" class="linha-editavel" style="min-width: 80px;" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>.
+      <span contenteditable="true" class="linha-editavel" id="inicio_afastamento" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>.
     </p>
 
     <p>
-      Observações: <span contenteditable="true" class="linha-editavel" style="min-width: 300px;"></span>
+      Observações: <span contenteditable="true" class="linha-editavel" id="observacoes"></span>
     </p>
 
     <div class="bloco-data">
       <strong>Data:</strong>
-      <span contenteditable="true" class="linha-editavel" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="assinatura">
@@ -152,6 +151,17 @@
 </div>
 
 <script>
+  const campos = document.querySelectorAll('.linha-editavel');
+
+  campos.forEach(el => {
+    const valorSalvo = sessionStorage.getItem(el.id);
+    if (valorSalvo) el.textContent = valorSalvo;
+
+    el.addEventListener('input', () => {
+      sessionStorage.setItem(el.id, el.textContent);
+    });
+  });
+
   function exportarPDF() {
     document.body.classList.add("exportando");
     document.getElementById("btnExportar").style.display = "none";
@@ -178,6 +188,7 @@
     if (valor.length === 8) {
       const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
       campo.textContent = formatado;
+
       const range = document.createRange();
       const sel = window.getSelection();
       range.selectNodeContents(campo);
