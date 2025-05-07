@@ -52,7 +52,7 @@
     label {
       font-size: 10pt;
       font-weight: bold;
-      display: block;
+      display: inline-block;
     }
 
     .linha-editavel {
@@ -87,15 +87,15 @@
     }
 
     .data-fixa {
-  position: absolute;
-  bottom: 35mm;
-  left: 0;
-  width: 100%;
-  text-align: left;
-  font-size: 10pt;
-  font-weight: bold;
-  padding-left: 5mm; /* opcional: distância da borda */
-}
+      position: absolute;
+      bottom: 35mm;
+      left: 0;
+      width: 100%;
+      text-align: left;
+      font-size: 10pt;
+      font-weight: bold;
+      padding-left: 5mm;
+    }
 
     .assinatura-line {
       margin-top: 10px;
@@ -137,18 +137,18 @@
     </div>
 
     <div class="campo">
-  <label style="display: inline-block; width: 52px;">Paciente:</label>
-      <span contenteditable="true" class="linha-editavel" id="paciente" oninput="sincronizarCampo(this)"></span>
+      <label style="width: 52px;">Paciente:</label>
+      <span contenteditable="true" class="linha-editavel" id="paciente" oninput="sincronizarCampo(this); salvarPadrao(this)"></span>
     </div>
 
     <div class="campo">
-  <label style="display: inline-block; width: 120px;">Data de nascimento:</label>
-  <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarData(this); sincronizarCampo(this)" onkeyup="formatarData(this)"></span>
+      <label style="width: 120px;">Data de nascimento:</label>
+      <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="campo">
-  <label style="display: inline-block; width: 60px;">Endereço:</label>
-      <span contenteditable="true" class="linha-editavel" id="endereco" oninput="sincronizarCampo(this)"></span>
+      <label style="width: 60px;">Endereço:</label>
+      <span contenteditable="true" class="linha-editavel" id="endereco" oninput="sincronizarCampo(this); salvarPadrao(this)"></span>
     </div>
 
     <div id="controleQuantidade" class="campo">
@@ -167,10 +167,9 @@
 
     <div id="medicamentos1"></div>
 
-    <!-- Data fixa acima da assinatura -->
     <div class="data-fixa">
       <label>Data:</label>
-      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this); sincronizarCampo(this)" onkeyup="formatarData(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="assinatura">
@@ -190,17 +189,17 @@
     </div>
 
     <div class="campo">
-  <label style="display: inline-block; width: 52px;">Paciente:</label>
+      <label style="width: 52px;">Paciente:</label>
       <span contenteditable="true" class="linha-editavel" id="copia_paciente"></span>
     </div>
 
     <div class="campo">
-  <label style="display: inline-block; width: 120px;">Data de nascimento:</label>
+      <label style="width: 120px;">Data de nascimento:</label>
       <span contenteditable="true" class="linha-editavel" id="copia_nascimento"></span>
     </div>
 
     <div class="campo">
-  <label style="display: inline-block; width: 60px;">Endereço:</label>
+      <label style="width: 60px;">Endereço:</label>
       <span contenteditable="true" class="linha-editavel" id="copia_endereco"></span>
     </div>
 
@@ -225,7 +224,6 @@
     const qtd = parseInt(document.getElementById("qtdMedicamentos").value);
     const med1 = document.getElementById("medicamentos1");
     const med2 = document.getElementById("medicamentos2");
-
     med1.innerHTML = '';
     med2.innerHTML = '';
 
@@ -236,15 +234,15 @@
       med1.innerHTML += `
         <div class="medicamento">
           <label>${i}. <span contenteditable="true" class="linha-editavel" id="${idMedicamento}" oninput="sincronizarCampo(this)"></span></label>
-          <label>Modo de usar:</label>
-          <span contenteditable="true" class="linha-editavel" id="${idModoUso}" oninput="sincronizarCampo(this)"></span>
+          <div><label>Modo de usar:</label>
+          <span contenteditable="true" class="linha-editavel" id="${idModoUso}" oninput="sincronizarCampo(this)"></span></div>
         </div>`;
 
       med2.innerHTML += `
         <div class="medicamento">
           <label>${i}. <span contenteditable="true" class="linha-editavel" id="copia_${idMedicamento}"></span></label>
-          <label>Modo de usar:</label>
-          <span contenteditable="true" class="linha-editavel" id="copia_${idModoUso}"></span>
+          <div><label>Modo de usar:</label>
+          <span contenteditable="true" class="linha-editavel" id="copia_${idModoUso}"></span></div>
         </div>`;
     }
   }
@@ -253,6 +251,35 @@
     const copia = document.getElementById("copia_" + campo.id);
     if (copia) {
       copia.textContent = campo.textContent;
+    }
+  }
+
+  function salvarPadrao(campo) {
+    sessionStorage.setItem(campo.id, campo.textContent);
+  }
+
+  function carregarPadrao(id) {
+    const campo = document.getElementById(id);
+    if (campo && sessionStorage.getItem(id)) {
+      campo.textContent = sessionStorage.getItem(id);
+      sincronizarCampo(campo);
+    }
+  }
+
+  function formatarData(campo) {
+    let valor = campo.textContent.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.slice(0, 8);
+    if (valor.length === 8) {
+      const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
+      campo.textContent = formatado;
+      sincronizarCampo(campo);
+      salvarPadrao(campo);
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(campo);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
   }
 
@@ -281,23 +308,13 @@
     }, 300);
   }
 
-  function formatarData(campo) {
-    let valor = campo.textContent.replace(/\D/g, '');
-    if (valor.length > 8) valor = valor.slice(0, 8);
-    if (valor.length === 8) {
-      const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
-      campo.textContent = formatado;
-      sincronizarCampo(campo);
-      const range = document.createRange();
-      const sel = window.getSelection();
-      range.selectNodeContents(campo);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  }
-
-  window.onload = gerarMedicamentos;
+  window.onload = () => {
+    gerarMedicamentos();
+    carregarPadrao("paciente");
+    carregarPadrao("nascimento");
+    carregarPadrao("endereco");
+    carregarPadrao("data");
+  };
 </script>
 
 </body>
