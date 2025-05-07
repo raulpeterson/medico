@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Receituário Médico</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
@@ -48,7 +48,8 @@
     label {
       font-size: 10pt;
       font-weight: bold;
-      display: block;
+      display: inline-block;
+      margin-right: 5px;
     }
 
     .linha-editavel {
@@ -60,6 +61,7 @@
       outline: none;
       border: 1px dashed #aaa;
       border-radius: 2px;
+      font-weight: bold;
     }
 
     body.exportando .linha-editavel {
@@ -67,7 +69,8 @@
     }
 
     .medicamento {
-      margin-top: 3px;
+      margin-top: 8px;
+      margin-bottom: 5px;
     }
 
     .assinatura {
@@ -124,29 +127,27 @@
 <a href="index.html" style="position: absolute; top: 10px; left: 10px; font-size: 10pt; text-decoration: none; border: 1px solid #000; padding: 5px 10px; background-color: #f8f8f8; color: #000; border-radius: 4px;">← Voltar</a>
 
 <div class="pagina" id="conteudoPDF">
-  <!-- Primeira via -->
   <div class="via">
     <h2>RECEITUÁRIO MÉDICO</h2>
     <div class="header">
-      DRA. STHÉFANIE HORN SCHWARZ<br>
+      DRA. STHÉFANIE HORN SCHWARZ<br />
       CRM-PR 60.163
     </div>
 
-<div class="campo">
-  <label style="display: inline-block; width: 52px;">Paciente:</label>
-  <span contenteditable="true" class="linha-editavel" id="paciente"></span>
-</div>
+    <div class="campo">
+      <label style="width: 70px;">Paciente:</label>
+      <span contenteditable="true" class="linha-editavel" id="paciente" oninput="atualizarCampo('paciente', this)"></span>
+    </div>
 
-<div class="campo">
-  <label style="display: inline-block; width: 120px;">Data de nascimento:</label>
-  <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
-</div>
+    <div class="campo">
+      <label style="width: 140px;">Data de nascimento:</label>
+      <span contenteditable="true" class="linha-editavel" id="nascimento" oninput="formatarDataNascimento(this)" onkeyup="formatarDataNascimento(this)"></span>
+    </div>
 
-<div class="campo">
-  <label style="display: inline-block; width: 60px;">Endereço:</label>
-  <span contenteditable="true" class="linha-editavel" id="endereco"></span>
-</div>
-
+    <div class="campo">
+      <label style="width: 70px;">Endereço:</label>
+      <span contenteditable="true" class="linha-editavel" id="endereco" oninput="atualizarCampo('endereco', this)"></span>
+    </div>
 
     <div id="controleQuantidade" class="campo">
       <label>Quantidade de Medicamentos:</label>
@@ -166,7 +167,7 @@
 
     <div class="data-fixa">
       <label>Data:</label>
-      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
+      <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this); atualizarCampo('data', this)" onkeyup="formatarData(this)"></span>
     </div>
 
     <div class="assinatura">
@@ -190,11 +191,46 @@
 
       med1.innerHTML += `
         <div class="medicamento">
-          <label>${i}. <span contenteditable="true" class="linha-editavel" id="${idMedicamento}"></span></label>
+          <label>${i}. <span contenteditable="true" class="linha-editavel" id="${idMedicamento}"></span></label><br>
           <label>Modo de usar:</label>
           <span contenteditable="true" class="linha-editavel" id="${idModoUso}"></span>
         </div>`;
     }
+  }
+
+  function atualizarCampo(chave, campo) {
+    sessionStorage.setItem(chave, campo.textContent);
+  }
+
+  function carregarCamposPadrao() {
+    const campos = ['paciente', 'nascimento', 'endereco', 'data'];
+    campos.forEach(id => {
+      const valor = sessionStorage.getItem(id);
+      if (valor && document.getElementById(id)) {
+        document.getElementById(id).textContent = valor;
+      }
+    });
+  }
+
+  function formatarData(campo) {
+    let valor = campo.textContent.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.slice(0, 8);
+    if (valor.length === 8) {
+      const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
+      campo.textContent = formatado;
+      atualizarCampo(campo.id, campo);
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(campo);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+
+  function formatarDataNascimento(campo) {
+    formatarData(campo);
+    atualizarCampo('nascimento', campo);
   }
 
   function exportarPDF() {
@@ -222,22 +258,10 @@
     }, 300);
   }
 
-  function formatarData(campo) {
-    let valor = campo.textContent.replace(/\D/g, '');
-    if (valor.length > 8) valor = valor.slice(0, 8);
-    if (valor.length === 8) {
-      const formatado = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
-      campo.textContent = formatado;
-      const range = document.createRange();
-      const sel = window.getSelection();
-      range.selectNodeContents(campo);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  }
-
-  window.onload = gerarMedicamentos;
+  window.onload = () => {
+    carregarCamposPadrao();
+    gerarMedicamentos();
+  };
 </script>
 
 </body>
