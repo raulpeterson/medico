@@ -97,12 +97,17 @@
   </div>
 
   <div class="texto">
-    Encaminho o Sr(a). <span contenteditable="true" class="linha-editavel"></span>, portador(a) do RG <span contenteditable="true" class="linha-editavel"></span> inscrito no CPF <span contenteditable="true" class="linha-editavel"></span>,<br>
-    para tratamento de dependência química e distúrbios psíquicos, de acordo com o Diagnóstico CID: <span contenteditable="true" class="linha-editavel"></span> e reelaboração de seus comportamentos adictivos.<br>
-    Pelo período de <span contenteditable="true" class="linha-editavel"></span> dias.
+    Encaminho o Sr(a). <span contenteditable="true" class="linha-editavel" id="paciente"></span>, 
+    portador(a) do RG <span contenteditable="true" class="linha-editavel" id="identidade"></span> 
+    inscrito no CPF <span contenteditable="true" class="linha-editavel" id="cpf"></span>,<br>
+    para tratamento de dependência química e distúrbios psíquicos, de acordo com o Diagnóstico CID: 
+    <span contenteditable="true" class="linha-editavel" id="cid"></span> e reelaboração de seus comportamentos adictivos.<br>
+    Pelo período de <span contenteditable="true" class="linha-editavel" id="dias_afastamento"></span> dias.
   </div>
 
-  <div class="texto"><strong>Data:</strong> <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span></div>
+  <div class="texto"><strong>Data:</strong> 
+    <span contenteditable="true" class="linha-editavel" id="data" oninput="formatarData(this)" onkeyup="formatarData(this)"></span>
+  </div>
 
   <div class="assinatura">
     <div class="assinatura-line"></div>
@@ -148,6 +153,20 @@
       sel.addRange(range);
     }
   }
+
+  // sessionStorage: restaurar valores
+  window.onload = () => {
+    const campos = document.querySelectorAll(".linha-editavel");
+    campos.forEach(campo => {
+      const id = campo.id;
+      if (id && sessionStorage.getItem(id)) {
+        campo.textContent = sessionStorage.getItem(id);
+      }
+      campo.addEventListener("input", () => {
+        if (id) sessionStorage.setItem(id, campo.textContent);
+      });
+    });
+  };
 </script>
 
 </body>
