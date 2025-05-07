@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro de Paciente</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f0f2f5;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .container {
       background: white;
-      padding: 40px 30px;
+      padding: 30px 20px;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
+      box-sizing: border-box;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 22px;
+      margin-bottom: 24px;
+      font-size: 20px;
       color: #333;
     }
 
@@ -36,6 +38,7 @@
       margin-bottom: 6px;
       font-weight: bold;
       color: #444;
+      font-size: 14px;
     }
 
     input {
@@ -45,6 +48,7 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 14px;
+      box-sizing: border-box;
     }
 
     button {
@@ -60,6 +64,20 @@
 
     button:hover {
       background-color: #0056b3;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      button {
+        font-size: 15px;
+      }
     }
   </style>
 </head>
